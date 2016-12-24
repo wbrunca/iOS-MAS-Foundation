@@ -194,6 +194,9 @@
 
 
 
+- (BOOL)isProtectedEndpoint:(NSString *)thisEndpoint;
+
+
 # pragma mark - Static
 
 + (NSError *)validateJSONConfiguration:(NSDictionary *)configuration;

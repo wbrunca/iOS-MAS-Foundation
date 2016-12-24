@@ -937,6 +937,24 @@ static float _systemVersionNumber_;
 }
 
 
+- (BOOL)isProtectedEndpoint:(NSString *)thisEndpoint
+{
+    NSURL *isThisURL = [NSURL URLWithString:thisEndpoint];
+    NSURL *thisURL = nil;
+    
+    if (isThisURL && isThisURL.scheme && isThisURL.host)
+    {
+        thisURL = [NSURL URLWithString:thisEndpoint];
+    }
+    else {
+        NSString *endPoint = [NSString stringWithFormat:@"%@%@",[MASConfiguration currentConfiguration].gatewayPrefix, thisEndpoint];
+        thisURL = [NSURL URLWithString:endPoint relativeToURL:[MASConfiguration currentConfiguration].gatewayUrl];
+    }
+    
+    return [thisURL.absoluteString hasPrefix:self.gatewayUrl.absoluteString];
+}
+
+
 #pragma clang diagnostic pop
 
 

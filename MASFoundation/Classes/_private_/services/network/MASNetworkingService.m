@@ -767,12 +767,13 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     //
     // Default types
     //
-    [self deleteFrom:endPoint
-      withParameters:parameterInfo
-          andHeaders:headerInfo
-         requestType:MASRequestResponseTypeJson
-        responseType:MASRequestResponseTypeJson
-          completion:completion];
+    [self httpDeleteFrom:endPoint
+          withParameters:parameterInfo
+              andHeaders:headerInfo
+             requestType:MASRequestResponseTypeJson
+            responseType:MASRequestResponseTypeJson
+                isPublic:NO
+              completion:completion];
 }
 
 
@@ -783,14 +784,30 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
       responseType:(MASRequestResponseType)responseType
         completion:(MASResponseInfoErrorBlock)completion
 {
-    //
-    // Just passthrough
-    //
     [self httpDeleteFrom:endPoint
           withParameters:parameterInfo
               andHeaders:headerInfo
              requestType:requestType
             responseType:responseType
+                isPublic:NO
+              completion:completion];
+}
+
+
+- (void)deleteFrom:(NSString *)endPoint
+    withParameters:(NSDictionary *)parameterInfo
+        andHeaders:(NSDictionary *)headerInfo
+       requestType:(MASRequestResponseType)requestType
+      responseType:(MASRequestResponseType)responseType
+          isPublic:(BOOL)isPublic
+        completion:(MASResponseInfoErrorBlock)completion
+{
+    [self httpDeleteFrom:endPoint
+          withParameters:parameterInfo
+              andHeaders:headerInfo
+             requestType:requestType
+            responseType:responseType
+                isPublic:isPublic
               completion:completion];
 }
 
@@ -800,6 +817,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
             andHeaders:(NSDictionary *)headerInfo
            requestType:(MASRequestResponseType)requestType
           responseType:(MASRequestResponseType)responseType
+              isPublic:(BOOL)isPublic
             completion:(MASResponseInfoErrorBlock)completion
 {
     //DLog(@"called");
@@ -846,7 +864,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              //
              // create request
              //
-             MASDeleteURLRequest *request = [MASDeleteURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType];
+             MASDeleteURLRequest *request = [MASDeleteURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
              
              //
              // create dataTask
@@ -871,7 +889,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         //
         // create request
         //
-        MASDeleteURLRequest *request = [MASDeleteURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType];
+        MASDeleteURLRequest *request = [MASDeleteURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic];
         
         //
         // create dataTask
@@ -900,12 +918,13 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     //
     // Default types
     //
-    [self getFrom:endPoint
-   withParameters:parameterInfo
-       andHeaders:headerInfo
-      requestType:MASRequestResponseTypeJson
-     responseType:MASRequestResponseTypeJson
-       completion:completion];
+    [self httpGetFrom:endPoint
+       withParameters:parameterInfo
+           andHeaders:headerInfo
+          requestType:MASRequestResponseTypeJson
+         responseType:MASRequestResponseTypeJson
+             isPublic:NO
+           completion:completion];
 }
 
 
@@ -916,14 +935,30 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
    responseType:(MASRequestResponseType)responseType
      completion:(MASResponseInfoErrorBlock)completion
 {
-    //
-    // Just passthrough
-    //
     [self httpGetFrom:endPoint
        withParameters:parameterInfo
            andHeaders:headerInfo
           requestType:requestType
          responseType:responseType
+             isPublic:NO
+           completion:completion];
+}
+
+
+- (void)getFrom:(NSString *)endPoint
+ withParameters:(NSDictionary *)parameterInfo
+     andHeaders:(NSDictionary *)headerInfo
+    requestType:(MASRequestResponseType)requestType
+   responseType:(MASRequestResponseType)responseType
+       isPublic:(BOOL)isPublic
+     completion:(MASResponseInfoErrorBlock)completion
+{
+    [self httpGetFrom:endPoint
+       withParameters:parameterInfo
+           andHeaders:headerInfo
+          requestType:requestType
+         responseType:responseType
+             isPublic:isPublic
            completion:completion];
 }
 
@@ -933,6 +968,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
          andHeaders:(NSDictionary *)headerInfo
         requestType:(MASRequestResponseType)requestType
        responseType:(MASRequestResponseType)responseType
+           isPublic:(BOOL)isPublic
          completion:(MASResponseInfoErrorBlock)completion
 {
     //DLog(@"called");
@@ -979,7 +1015,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              //
              // create request
              //
-             MASGetURLRequest *request = [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType];
+             MASGetURLRequest *request = [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
              
              //
              // create dataTask
@@ -1004,7 +1040,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         //
         // Else just create the request
         //
-        MASGetURLRequest *request = [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType];
+        MASGetURLRequest *request = [MASGetURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic];
         
         //
         // create dataTask
@@ -1034,12 +1070,13 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     //
     // Default types
     //
-    [self patchTo:endPoint
-   withParameters:parameterInfo
-       andHeaders:headerInfo
-      requestType:MASRequestResponseTypeJson
-     responseType:MASRequestResponseTypeJson
-       completion:completion];
+    [self httpPatchTo:endPoint
+       withParameters:parameterInfo
+           andHeaders:headerInfo
+          requestType:MASRequestResponseTypeJson
+         responseType:MASRequestResponseTypeJson
+             isPublic:NO
+           completion:completion];
 }
 
 
@@ -1050,14 +1087,30 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
    responseType:(MASRequestResponseType)responseType
      completion:(MASResponseInfoErrorBlock)completion
 {
-    //
-    // Just passthrough
-    //
     [self httpPatchTo:endPoint
        withParameters:parameterInfo
            andHeaders:headerInfo
           requestType:requestType
          responseType:responseType
+             isPublic:NO
+           completion:completion];
+}
+
+
+- (void)patchTo:(NSString *)endPoint
+ withParameters:(NSDictionary *)parameterInfo
+     andHeaders:(NSDictionary *)headerInfo
+    requestType:(MASRequestResponseType)requestType
+   responseType:(MASRequestResponseType)responseType
+       isPublic:(BOOL)isPublic
+     completion:(MASResponseInfoErrorBlock)completion
+{
+    [self httpPatchTo:endPoint
+       withParameters:parameterInfo
+           andHeaders:headerInfo
+          requestType:requestType
+         responseType:responseType
+             isPublic:isPublic
            completion:completion];
 }
 
@@ -1067,6 +1120,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
          andHeaders:(NSDictionary *)headerInfo
         requestType:(MASRequestResponseType)requestType
        responseType:(MASRequestResponseType)responseType
+           isPublic:(BOOL)isPublic
          completion:(MASResponseInfoErrorBlock)completion
 {
     //
@@ -1111,7 +1165,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              //
              // create request
              //
-             MASPatchURLRequest *request = [MASPatchURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType];
+             MASPatchURLRequest *request = [MASPatchURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
              
              //
              // create dataTask
@@ -1136,7 +1190,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         //
         // create request
         //
-        MASPatchURLRequest *request = [MASPatchURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType];
+        MASPatchURLRequest *request = [MASPatchURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic];
         
         //
         // create dataTask
@@ -1166,12 +1220,13 @@ withParameters:(NSDictionary *)parameterInfo
     //
     // Default types
     //
-    [self postTo:endPoint
-  withParameters:parameterInfo
-      andHeaders:headerInfo
-     requestType:MASRequestResponseTypeJson
-    responseType:MASRequestResponseTypeJson
-      completion:completion];
+    [self httpPostTo:endPoint
+      withParameters:parameterInfo
+          andHeaders:headerInfo
+         requestType:MASRequestResponseTypeJson
+        responseType:MASRequestResponseTypeJson
+            isPublic:NO
+          completion:completion];
 }
 
 
@@ -1182,15 +1237,30 @@ withParameters:(NSDictionary *)parameterInfo
   responseType:(MASRequestResponseType)responseType
     completion:(MASResponseInfoErrorBlock)completion
 {
-    //DLog(@"called");
-    //
-    // Just passthrough
-    //
     [self httpPostTo:endPoint
       withParameters:parameterInfo
           andHeaders:headerInfo
          requestType:requestType
         responseType:responseType
+            isPublic:NO
+          completion:completion];
+}
+
+
+- (void)postTo:(NSString *)endPoint
+withParameters:(NSDictionary *)parameterInfo
+    andHeaders:(NSDictionary *)headerInfo
+   requestType:(MASRequestResponseType)requestType
+  responseType:(MASRequestResponseType)responseType
+      isPublic:(BOOL)isPublic
+    completion:(MASResponseInfoErrorBlock)completion
+{
+    [self httpPostTo:endPoint
+      withParameters:parameterInfo
+          andHeaders:headerInfo
+         requestType:requestType
+        responseType:responseType
+            isPublic:isPublic
           completion:completion];
 }
 
@@ -1200,6 +1270,7 @@ withParameters:(NSDictionary *)parameterInfo
         andHeaders:(NSDictionary *)headerInfo
        requestType:(MASRequestResponseType)requestType
       responseType:(MASRequestResponseType)responseType
+          isPublic:(BOOL)isPublic
         completion:(MASResponseInfoErrorBlock)completion
 {
     //DLog(@"called");
@@ -1246,7 +1317,7 @@ withParameters:(NSDictionary *)parameterInfo
              //
              // create request
              //
-             MASPostURLRequest *request = [MASPostURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType];
+             MASPostURLRequest *request = [MASPostURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
              
              //
              // create dataTask
@@ -1272,7 +1343,7 @@ withParameters:(NSDictionary *)parameterInfo
         //
         // create request
         //
-        MASPostURLRequest *request = [MASPostURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType];
+        MASPostURLRequest *request = [MASPostURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic];
         
         //
         // create dataTask
@@ -1302,12 +1373,13 @@ withParameters:(NSDictionary *)parameterInfo
     //
     // Default types
     //
-    [self putTo:endPoint
- withParameters:parameterInfo
-     andHeaders:headerInfo
-    requestType:MASRequestResponseTypeJson
-   responseType:MASRequestResponseTypeJson
-     completion:completion];
+    [self httpPutTo:endPoint
+     withParameters:parameterInfo
+         andHeaders:headerInfo
+        requestType:MASRequestResponseTypeJson
+       responseType:MASRequestResponseTypeJson
+           isPublic:NO
+         completion:completion];
 }
 
 
@@ -1318,14 +1390,30 @@ withParameters:(NSDictionary *)parameterInfo
  responseType:(MASRequestResponseType)responseType
    completion:(MASResponseInfoErrorBlock)completion
 {
-    //
-    // Just passthrough
-    //
     [self httpPutTo:endPoint
      withParameters:parameterInfo
          andHeaders:headerInfo
         requestType:requestType
        responseType:responseType
+           isPublic:NO
+         completion:completion];
+}
+
+
+- (void)putTo:(NSString *)endPoint
+withParameters:(NSDictionary *)parameterInfo
+   andHeaders:(NSDictionary *)headerInfo
+  requestType:(MASRequestResponseType)requestType
+ responseType:(MASRequestResponseType)responseType
+     isPublic:(BOOL)isPublic
+   completion:(MASResponseInfoErrorBlock)completion
+{
+    [self httpPutTo:endPoint
+     withParameters:parameterInfo
+         andHeaders:headerInfo
+        requestType:requestType
+       responseType:responseType
+           isPublic:isPublic
          completion:completion];
 }
 
@@ -1335,6 +1423,7 @@ withParameters:(NSDictionary *)parameterInfo
        andHeaders:(NSDictionary *)headerInfo
       requestType:(MASRequestResponseType)requestType
      responseType:(MASRequestResponseType)responseType
+         isPublic:(BOOL)isPublic
        completion:(MASResponseInfoErrorBlock)completion
 {
     //
@@ -1379,7 +1468,7 @@ withParameters:(NSDictionary *)parameterInfo
              //
              // create request
              //
-             MASPutURLRequest *request = [MASPutURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType];
+             MASPutURLRequest *request = [MASPutURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:mutableHeaderInfo requestType:requestType responseType:responseType isPublic:isPublic];
              
              //
              // create dataTask
@@ -1404,7 +1493,7 @@ withParameters:(NSDictionary *)parameterInfo
         //
         // create request
         //
-        MASPutURLRequest *request = [MASPutURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType];
+        MASPutURLRequest *request = [MASPutURLRequest requestForEndpoint:endPoint withParameters:parameterInfo andHeaders:headerInfo requestType:requestType responseType:responseType isPublic:isPublic];
         
         //
         // create dataTask

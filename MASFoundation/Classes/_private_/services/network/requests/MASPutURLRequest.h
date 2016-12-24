@@ -38,6 +38,7 @@
                           withParameters:(NSDictionary *)parameterInfo
                               andHeaders:(NSDictionary *)headerInfo
                              requestType:(MASRequestResponseType)requestType
-                            responseType:(MASRequestResponseType)responseType;
+                            responseType:(MASRequestResponseType)responseType
+                                isPublic:(BOOL)isPublic;
 
 @end

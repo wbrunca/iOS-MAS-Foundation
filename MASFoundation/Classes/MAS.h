@@ -359,6 +359,16 @@
 
 
 
++ (void)deleteFrom:(nonnull NSString *)endPointPath
+    withParameters:(nullable NSDictionary *)parameterInfo
+        andHeaders:(nullable NSDictionary *)headerInfo
+       requestType:(MASRequestResponseType)requestType
+      responseType:(MASRequestResponseType)responseType
+          isPublic:(BOOL)isPublic
+        completion:(nullable MASResponseInfoErrorBlock)completion;
+
+
+
 /**
  *  Request method for an HTTP GET call from the Gateway.  This type of HTTP Method type
  *  places it's parameters within the NSURL itself as an HTTP query extension as so:
@@ -409,6 +419,16 @@
 
 
 
++ (void)getFrom:(nonnull NSString *)endPointPath
+ withParameters:(nullable NSDictionary *)parameterInfo
+     andHeaders:(nullable NSDictionary *)headerInfo
+    requestType:(MASRequestResponseType)requestType
+   responseType:(MASRequestResponseType)responseType
+       isPublic:(BOOL)isPublic
+     completion:(nullable MASResponseInfoErrorBlock)completion;
+
+
+
 /**
  *  Request method for an HTTP PATCH call to the Gateway.  This type of HTTP Method type
  *  places it's parameters within the HTTP body in www-form-url-encoded format:
@@ -463,6 +483,16 @@
 
 
 
++ (void)patchTo:(nonnull NSString *)endPointPath
+ withParameters:(nullable NSDictionary *)parameterInfo
+     andHeaders:(nullable NSDictionary *)headerInfo
+    requestType:(MASRequestResponseType)requestType
+   responseType:(MASRequestResponseType)responseType
+       isPublic:(BOOL)isPublic
+     completion:(nullable MASResponseInfoErrorBlock)completion;
+
+
+
 /**
  *  Request method for an HTTP POST call to the Gateway.  This type of HTTP Method type
  *  places it's parameters within the HTTP body in www-form-url-encoded format:
@@ -510,10 +540,20 @@
  */
 + (void)postTo:(nonnull NSString *)endPointPath
     withParameters:(nullable NSDictionary *)parameterInfo
-        andHeaders:(nullable NSDictionary *)headerinfo
+        andHeaders:(nullable NSDictionary *)headerInfo
       requestType:(MASRequestResponseType)requestType
       responseType:(MASRequestResponseType)responseType
         completion:(nullable MASResponseInfoErrorBlock)completion;
+
+
+
++ (void)postTo:(nonnull NSString *)endPointPath
+withParameters:(nullable NSDictionary *)parameterInfo
+    andHeaders:(nullable NSDictionary *)headerInfo
+   requestType:(MASRequestResponseType)requestType
+  responseType:(MASRequestResponseType)responseType
+      isPublic:(BOOL)isPublic
+    completion:(nullable MASResponseInfoErrorBlock)completion;
 
 
 
@@ -568,6 +608,16 @@
       requestType:(MASRequestResponseType)requestType
       responseType:(MASRequestResponseType)responseType
         completion:(nullable MASResponseInfoErrorBlock)completion;
+
+
+
++ (void)putTo:(nonnull NSString *)endPointPath
+withParameters:(nullable NSDictionary *)parameterInfo
+   andHeaders:(nullable NSDictionary *)headerInfo
+  requestType:(MASRequestResponseType)requestType
+ responseType:(MASRequestResponseType)responseType
+     isPublic:(BOOL)isPublic
+   completion:(nullable MASResponseInfoErrorBlock)completion;
 
 
 

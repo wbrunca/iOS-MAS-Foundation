@@ -25,11 +25,12 @@
                                 andHeaders:(NSDictionary *)headerInfo
                                requestType:(MASRequestResponseType)requestType
                               responseType:(MASRequestResponseType)responseType
+                                  isPublic:(BOOL)isPublic
 {
     //
     // Adding prefix to the endpoint path
     //
-    if ([MASConfiguration currentConfiguration].gatewayPrefix)
+    if ([[MASConfiguration currentConfiguration] isProtectedEndpoint:endPoint] && [MASConfiguration currentConfiguration].gatewayPrefix)
     {
         endPoint = [NSString stringWithFormat:@"%@%@",[MASConfiguration currentConfiguration].gatewayPrefix, endPoint];
     }
@@ -54,18 +55,25 @@
     //
     // Mutable copy of header
     //
-    NSMutableDictionary *mutableHeaderInfo = [headerInfo mutableCopy];
+    NSMutableDictionary *mutableHeaderInfo = headerInfo != nil ? [headerInfo mutableCopy] : [NSMutableDictionary dictionary];
     
-    //mag-identifier
-    if ([MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier])
+    //
+    // If the request is being made to public API or not to the primary gateway, ignore injecting credentials
+    //
+    if (!isPublic && [url.absoluteString containsString:[MASConfiguration currentConfiguration].gatewayUrl.absoluteString])
     {
-        mutableHeaderInfo[MASMagIdentifierRequestResponseKey] = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
-    }
-    
-    // Authorization
-    if ([MASAccessService sharedService].currentAccessObj.accessToken && ![[mutableHeaderInfo allKeys] containsObject:MASAuthorizationRequestResponseKey])
-    {
-        mutableHeaderInfo[MASAuthorizationRequestResponseKey] = [MASUser authorizationBearerWithAccessToken];
+        
+        // mag-identifier
+        if ([MASDevice currentDevice].isRegistered && [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier])
+        {
+            mutableHeaderInfo[MASMagIdentifierRequestResponseKey] = [[MASAccessService sharedService] getAccessValueStringWithType:MASAccessValueTypeMAGIdentifier];
+        }
+        
+        // Authorization
+        if ([MASAccessService sharedService].currentAccessObj.accessToken && ![[mutableHeaderInfo allKeys] containsObject:MASAuthorizationRequestResponseKey])
+        {
+            mutableHeaderInfo[MASAuthorizationRequestResponseKey] = [MASUser authorizationBearerWithAccessToken];
+        }
     }
     
     //

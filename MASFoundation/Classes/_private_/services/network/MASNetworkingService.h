@@ -161,8 +161,18 @@
 - (void)deleteFrom:(NSString *)endPoint
     withParameters:(NSDictionary *)parameterInfo
         andHeaders:(NSDictionary *)headerInfo
-      requestType:(MASRequestResponseType)requestType
+       requestType:(MASRequestResponseType)requestType
       responseType:(MASRequestResponseType)responseType
+        completion:(MASResponseInfoErrorBlock)completion;
+
+
+
+- (void)deleteFrom:(NSString *)endPoint
+    withParameters:(NSDictionary *)parameterInfo
+        andHeaders:(NSDictionary *)headerInfo
+       requestType:(MASRequestResponseType)requestType
+      responseType:(MASRequestResponseType)responseType
+          isPublic:(BOOL)isPublic
         completion:(MASResponseInfoErrorBlock)completion;
 
 
@@ -224,6 +234,15 @@
       requestType:(MASRequestResponseType)requestType
       responseType:(MASRequestResponseType)responseType
         completion:(MASResponseInfoErrorBlock)completion;
+
+
+- (void)getFrom:(NSString *)endPoint
+ withParameters:(NSDictionary *)parameterInfo
+     andHeaders:(NSDictionary *)headerInfo
+    requestType:(MASRequestResponseType)requestType
+   responseType:(MASRequestResponseType)responseType
+       isPublic:(BOOL)isPublic
+     completion:(MASResponseInfoErrorBlock)completion;
 
 
 /**
@@ -288,6 +307,15 @@
        requestType:(MASRequestResponseType)requestType
       responseType:(MASRequestResponseType)responseType
         completion:(MASResponseInfoErrorBlock)completion;
+
+
+- (void)patchTo:(NSString *)endPoint
+ withParameters:(NSDictionary *)parameterInfo
+     andHeaders:(NSDictionary *)headerInfo
+    requestType:(MASRequestResponseType)requestType
+   responseType:(MASRequestResponseType)responseType
+       isPublic:(BOOL)isPublic
+     completion:(MASResponseInfoErrorBlock)completion;
 
 
 /**
@@ -356,6 +384,15 @@
         completion:(MASResponseInfoErrorBlock)completion;
 
 
+- (void)postTo:(NSString *)endPoint
+withParameters:(NSDictionary *)parameterInfo
+    andHeaders:(NSDictionary *)headerInfo
+   requestType:(MASRequestResponseType)requestType
+  responseType:(MASRequestResponseType)responseType
+      isPublic:(BOOL)isPublic
+    completion:(MASResponseInfoErrorBlock)completion;
+
+
 /**
  * Request method for an HTTP PUT call to the Gateway.  This type of HTTP Method type
  * places it's parameters within the HTTP body in www-form-urlencoded format:
@@ -418,6 +455,15 @@
       requestType:(MASRequestResponseType)requestType
       responseType:(MASRequestResponseType)responseType
         completion:(MASResponseInfoErrorBlock)completion;
+
+
+- (void)putTo:(NSString *)endPoint
+withParameters:(NSDictionary *)parameterInfo
+   andHeaders:(NSDictionary *)headerInfo
+  requestType:(MASRequestResponseType)requestType
+ responseType:(MASRequestResponseType)responseType
+     isPublic:(BOOL)isPublic
+   completion:(MASResponseInfoErrorBlock)completion;
 
 @end
 
