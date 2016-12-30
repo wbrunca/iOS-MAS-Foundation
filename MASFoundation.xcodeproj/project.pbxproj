@@ -317,6 +317,8 @@
 		CB5E4C751C1D26BA001B3B8A /* MASPatchURLRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = CB5E4C731C1D26BA001B3B8A /* MASPatchURLRequest.m */; };
 		CB63A8911CF64E21005DDBEB /* MASSocialLogin.h in Headers */ = {isa = PBXBuildFile; fileRef = CB63A88F1CF64E21005DDBEB /* MASSocialLogin.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CB63A8921CF64E21005DDBEB /* MASSocialLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = CB63A8901CF64E21005DDBEB /* MASSocialLogin.m */; };
+		CB671CC71E15C3A800723ACD /* MASPublicNetworkConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = CB671CC51E15C3A800723ACD /* MASPublicNetworkConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		CB671CC81E15C3A800723ACD /* MASPublicNetworkConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CB671CC61E15C3A800723ACD /* MASPublicNetworkConfiguration.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -659,6 +661,8 @@
 		CB5E4C731C1D26BA001B3B8A /* MASPatchURLRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASPatchURLRequest.m; sourceTree = "<group>"; };
 		CB63A88F1CF64E21005DDBEB /* MASSocialLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASSocialLogin.h; sourceTree = "<group>"; };
 		CB63A8901CF64E21005DDBEB /* MASSocialLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASSocialLogin.m; sourceTree = "<group>"; };
+		CB671CC51E15C3A800723ACD /* MASPublicNetworkConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASPublicNetworkConfiguration.h; sourceTree = "<group>"; };
+		CB671CC61E15C3A800723ACD /* MASPublicNetworkConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASPublicNetworkConfiguration.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1196,6 +1200,7 @@
 				A488CE741C0B97FD00B8B961 /* MASService.m */,
 				CB14D21B1D0228DB004F772E /* MASProximityLoginDelegate.h */,
 				107389F21C7118F800B7E87E /* MQTT */,
+				CB671CC41E15C37900723ACD /* network */,
 				A419B39A1C17622E008DC88C /* categories */,
 				A4831A9A1BD1A551007B4AE6 /* models */,
 				A4E340AC1B9E9F2000883AD3 /* _private_ */,
@@ -1307,6 +1312,15 @@
 			path = sessionManager;
 			sourceTree = "<group>";
 		};
+		CB671CC41E15C37900723ACD /* network */ = {
+			isa = PBXGroup;
+			children = (
+				CB671CC51E15C3A800723ACD /* MASPublicNetworkConfiguration.h */,
+				CB671CC61E15C3A800723ACD /* MASPublicNetworkConfiguration.m */,
+			);
+			path = network;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1333,6 +1347,7 @@
 				A4831AAB1BD1A551007B4AE6 /* MASAuthenticationProvider.h in Headers */,
 				105B2F3A1CA6B3EA0005A2D0 /* md5.h in Headers */,
 				105B2F531CA6B3EA0005A2D0 /* ssl2.h in Headers */,
+				CB671CC71E15C3A800723ACD /* MASPublicNetworkConfiguration.h in Headers */,
 				105B2F4B1CA6B3EA0005A2D0 /* ripemd.h in Headers */,
 				A46F4A461C2F5FC500A4C370 /* RNCryptor.h in Headers */,
 				A46F49F11C2F5FC500A4C370 /* MASINTULocationRequestDefines.h in Headers */,
@@ -1655,6 +1670,7 @@
 				A47F12811C1D73530008E3F2 /* MASBluetoothPeripheral.m in Sources */,
 				A46F4A491C2F5FC500A4C370 /* RNCryptorEngine.m in Sources */,
 				A46F49DA1C2F5FC500A4C370 /* MASINetworkActivityIndicatorManager.m in Sources */,
+				CB671CC81E15C3A800723ACD /* MASPublicNetworkConfiguration.m in Sources */,
 				A4831AAE1BD1A551007B4AE6 /* MASConfiguration.m in Sources */,
 				10738A3B1C711C2F00B7E87E /* util_mosq.c in Sources */,
 				10738A2F1C711C2F00B7E87E /* read_handle.c in Sources */,
