@@ -11,6 +11,7 @@
 #import "MASDeleteURLRequest.h"
 
 #import "MASAccessService.h"
+#import "NSURL+MASPrivate.h"
 
 #define kMASHTTPDeleteRequestMethod @"DELETE"
 
@@ -30,7 +31,7 @@
     //
     // Adding prefix to the endpoint path
     //
-    if ([[MASConfiguration currentConfiguration] isProtectedEndpoint:endPoint] && [MASConfiguration currentConfiguration].gatewayPrefix)
+    if ([[MASConfiguration currentConfiguration].gatewayUrl isProtectedEndpoint:endPoint] && [MASConfiguration currentConfiguration].gatewayPrefix)
     {
         endPoint = [NSString stringWithFormat:@"%@%@",[MASConfiguration currentConfiguration].gatewayPrefix, endPoint];
     }

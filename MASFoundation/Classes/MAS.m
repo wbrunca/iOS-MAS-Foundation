@@ -20,6 +20,7 @@
 #import "MASOTPService.h"
 #import "MASSecurityService.h"
 #import "MASServiceRegistry.h"
+#import "NSURL+MASPrivate.h"
 
 #import "L7SBrowserURLProtocol.h"
 
@@ -758,7 +759,7 @@
     //
     // If the request is private API request, and made to the primary gateway, do the validation
     //
-    if (!isPublic && [[MASConfiguration currentConfiguration] isProtectedEndpoint:endPoint])
+    if (!isPublic && [[MASConfiguration currentConfiguration].gatewayUrl isProtectedEndpoint:endPoint])
     {
         __block MASResponseInfoErrorBlock blockCompletion = completion;
         
@@ -907,7 +908,7 @@
     //
     // If the request is private API request, and made to the primary gateway, do the validation
     //
-    if (!isPublic && [[MASConfiguration currentConfiguration] isProtectedEndpoint:endPoint])
+    if (!isPublic && [[MASConfiguration currentConfiguration].gatewayUrl isProtectedEndpoint:endPoint])
     {
         __block MASResponseInfoErrorBlock blockCompletion = completion;
         
@@ -1063,7 +1064,7 @@
     //
     // If the request is private API request, and made to the primary gateway, do the validation
     //
-    if (!isPublic && [[MASConfiguration currentConfiguration] isProtectedEndpoint:endPoint])
+    if (!isPublic && [[MASConfiguration currentConfiguration].gatewayUrl isProtectedEndpoint:endPoint])
     {
         __block MASResponseInfoErrorBlock blockCompletion = completion;
         
@@ -1213,7 +1214,7 @@ withParameters:(NSDictionary *)parameterInfo
     //
     // If the request is private API request, and made to the primary gateway, do the validation
     //
-    if (!isPublic && [[MASConfiguration currentConfiguration] isProtectedEndpoint:endPoint])
+    if (!isPublic && [[MASConfiguration currentConfiguration].gatewayUrl isProtectedEndpoint:endPoint])
     {
         __block MASResponseInfoErrorBlock blockCompletion = completion;
         
@@ -1364,7 +1365,7 @@ withParameters:(nullable NSDictionary *)parameterInfo
     //
     // If the request is private API request, and made to the primary gateway, do the validation
     //
-    if (!isPublic && [[MASConfiguration currentConfiguration] isProtectedEndpoint:endPoint])
+    if (!isPublic && [[MASConfiguration currentConfiguration].gatewayUrl isProtectedEndpoint:endPoint])
     {
         __block MASResponseInfoErrorBlock blockCompletion = completion;
         
