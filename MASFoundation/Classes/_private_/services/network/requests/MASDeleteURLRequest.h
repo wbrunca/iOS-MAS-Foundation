@@ -32,6 +32,8 @@
  * @param headerInfo The headers dictionary to include in the request.
  * @param requestType Represents the expected encoding of the request contents.
  * @param responseType Represents the excepted encoding of the response contents.
+ * @param isPublic Boolean value whether the request is being made outside of primary gateway.
+ *        When the value is set to true, all automatically injected credentials in SDK will be excluded in the request.
  * @return MASDeleteURLRequest which could be used to create NSURLSessionDataTask.
  */
 + (MASDeleteURLRequest *)requestForEndpoint:(NSString *)endPoint

@@ -10,7 +10,32 @@
 
 #import "MASPublicNetworkConfiguration.h"
 
+#import "MASNetworkingService.h"
+
+@interface MASPublicNetworkConfiguration ()
+
+@property (nonatomic, assign) MASSessionAuthenticationChallengeBlock sessionAuthChallengeBlock;
+
+@property (nonatomic, assign) MASTaskAuthenticationChallengeBlock taskAuthChallengeBlock;
+
+@end
+
 @implementation MASPublicNetworkConfiguration
+
+
+///--------------------------------------
+/// @name Life Cycle
+///--------------------------------------
+
+# pragma mark - Life Cycle
+
+- (id)init
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"Cannot call base init, call designated factory method" userInfo:nil];
+    
+    return nil;
+}
 
 + (instancetype)sharedConfiguration
 {
@@ -24,34 +49,46 @@
     return sharedInstance;
 }
 
-+ (void)setSSLPinningMode:(MASSSLPinningMode)mode
+
+///--------------------------------------
+/// @name Authentication Challenge Blocks
+///--------------------------------------
+
+# pragma mark - Authentication Challenge Blocks
+
+- (void)setSessionDidReceiveAuthenticationChallengeBlock:(MASSessionAuthenticationChallengeBlock)authChallengeBlock
 {
-    
+    _sessionAuthChallengeBlock = authChallengeBlock;
 }
 
-+ (void)setAllowInvalidCertificates:(BOOL)allowInvalidCertificates
+
+- (MASSessionAuthenticationChallengeBlock)sessionDidReceiveAuthenticationChallengeBlock
 {
-    
+    return _sessionAuthChallengeBlock;
 }
 
-+ (void)setValidatesCertificateChain:(BOOL)validatesCertficateChain
+
+- (void)setTaskDidReceiveAuthenticationChallengeBlock:(MASTaskAuthenticationChallengeBlock)authChallengeBlock
 {
-    
+    _taskAuthChallengeBlock = authChallengeBlock;
 }
 
-+ (void)setPinnedCertificates:(NSArray *)pinnedCertificates
+
+- (MASTaskAuthenticationChallengeBlock)taskDidReceiveAuthenticationChallengeBlock
 {
-    
+    return _taskAuthChallengeBlock;
 }
 
-+ (void)setSessionDidReceiveAuthenticationChallengeBlock:(MASSessionAuthenticationChallengeBlock)authChallengeBlock
-{
-    
-}
 
-+ (void)setTaskDidReceiveAuthenticationChallengeBlock:(MASTaskAuthenticationChallengeBlock)authChallengeBlock
+///--------------------------------------
+/// @name Configuration
+///--------------------------------------
+
+# pragma mark - Configuration
+
+- (void)updateConfiguration
 {
-    
+    [[MASNetworkingService sharedService] establishPublicURLSession];
 }
 
 @end

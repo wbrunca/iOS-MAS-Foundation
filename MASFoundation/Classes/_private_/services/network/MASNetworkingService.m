@@ -25,6 +25,7 @@
 #import "MASOTPService.h"
 #import "MASINetworking.h"
 #import "MASINetworkActivityLogger.h"
+#import "NSURL+MASPrivate.h"
 
 
 # pragma mark - Configuration Constants
@@ -57,6 +58,7 @@ NSString *const MASGatewayMonitoringStatusReachableViaWiFiValue = @"Reachable Vi
 # pragma mark - Properties
 
 @property (nonatomic, strong, readonly) MASIHTTPSessionManager *manager;
+@property (nonatomic, strong, readonly) MASIHTTPSessionManager *publicManager;
 
 @end
 
@@ -139,6 +141,11 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     //
     [self establishURLSession];
     
+    //
+    // establish URLSession with public network configuration
+    //
+    [self establishPublicURLSession];
+    
     [super serviceWillStart];
 }
 
@@ -152,6 +159,11 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     [self.manager.reachabilityManager stopMonitoring];
     [self.manager.reachabilityManager setReachabilityStatusChangeBlock:nil];
     _manager = nil;
+    
+    [self.publicManager.operationQueue cancelAllOperations];
+    [self.publicManager.reachabilityManager stopMonitoring];
+    [self.publicManager.reachabilityManager setReachabilityStatusChangeBlock:nil];
+    _publicManager = nil;
     
     [super serviceWillStop];
 }
@@ -168,6 +180,11 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
     [self.manager.reachabilityManager setReachabilityStatusChangeBlock:nil];
     _manager = nil;
     
+    [self.publicManager.operationQueue cancelAllOperations];
+    [self.publicManager.reachabilityManager stopMonitoring];
+    [self.publicManager.reachabilityManager setReachabilityStatusChangeBlock:nil];
+    _publicManager = nil;
+    
     //
     // Reset the value
     //
@@ -178,6 +195,63 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
 
 
 # pragma mark - Public
+
+- (void)establishPublicURLSession
+{
+    [self.publicManager.operationQueue cancelAllOperations];
+    [self.publicManager.reachabilityManager stopMonitoring];
+    [self.publicManager.reachabilityManager setReachabilityStatusChangeBlock:nil];
+    _publicManager = nil;
+    
+    //
+    // Public network configuration
+    //
+    MASPublicNetworkConfiguration *publicConfiguration = [MASPublicNetworkConfiguration sharedConfiguration];
+    
+    //
+    // Configure SSL pinning mode
+    //
+    MASISSLPinningMode publicPinningMode = MASISSLPinningModeNone;
+    
+    if (publicConfiguration.pinningMode == MASSSLPinningModePublicKey)
+    {
+        publicPinningMode = MASISSLPinningModePublicKey;
+    }
+    else if (publicConfiguration.pinningMode == MASSSLPinningModeCertificate)
+    {
+        publicPinningMode = MASISSLPinningModeCertificate;
+    }
+    
+    //
+    // Construct security policy
+    //
+    MASISecurityPolicy *publicPolicy = [MASISecurityPolicy policyWithPinningMode:publicPinningMode];
+    [publicPolicy setAllowInvalidCertificates:publicConfiguration.allowInvalidCertificates];
+    [publicPolicy setPinnedCertificates:publicConfiguration.pinnedCertificates];
+    [publicPolicy setValidatesCertificateChain:publicConfiguration.validatesCertficateChain];
+    
+    _publicManager = [[MASIHTTPSessionManager alloc] init];
+    _publicManager.securityPolicy = publicPolicy;
+    
+    if ([[MASPublicNetworkConfiguration sharedConfiguration] sessionDidReceiveAuthenticationChallengeBlock])
+    {
+        [_publicManager setSessionDidReceiveAuthenticationChallengeBlock:^NSURLSessionAuthChallengeDisposition(NSURLSession * _Nonnull session, NSURLAuthenticationChallenge * _Nonnull challenge, NSURLCredential *__autoreleasing  _Nullable * _Nullable credential) {
+            
+            NSURLSessionAuthChallengeDisposition disposition = [[MASPublicNetworkConfiguration sharedConfiguration] sessionDidReceiveAuthenticationChallengeBlock](session, challenge, credential);
+            return disposition;
+        }];
+    }
+    
+    if ([[MASPublicNetworkConfiguration sharedConfiguration] taskDidReceiveAuthenticationChallengeBlock])
+    {
+        [_publicManager setTaskDidReceiveAuthenticationChallengeBlock:^NSURLSessionAuthChallengeDisposition(NSURLSession * _Nonnull session, NSURLSessionTask * _Nonnull task, NSURLAuthenticationChallenge * _Nonnull challenge, NSURLCredential *__autoreleasing  _Nullable * _Nullable credential) {
+            
+            NSURLSessionAuthChallengeDisposition disposition = [[MASPublicNetworkConfiguration sharedConfiguration] taskDidReceiveAuthenticationChallengeBlock](session, task, challenge, credential);
+            return disposition;
+        }];
+    }
+}
+
 
 - (void)establishURLSession
 {
@@ -306,7 +380,7 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
             NSError *newError = [[NSError alloc] initWithDomain:error.domain code:error.code userInfo:errorUserInfo];
             error = newError;
         }
-
+        
         __block NSMutableDictionary *responseInfo = [NSMutableDictionary new];
         
         if (headerInfo)
@@ -835,6 +909,16 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         return;
     }
     
+    MASIHTTPSessionManager *dedicatedManager = nil;
+    
+    if ([[MASConfiguration currentConfiguration].gatewayUrl isProtectedEndpoint:endPoint])
+    {
+        dedicatedManager = _manager;
+    }
+    else {
+        dedicatedManager = _publicManager;
+    }
+    
     //
     // Determine if we need to add the geo-location header value
     //
@@ -869,14 +953,14 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              //
              // create dataTask
              //
-             NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                          completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                  parameters:parameterInfo
-                                                                                                                     headers:headerInfo
-                                                                                                                  httpMethod:request.HTTPMethod
-                                                                                                                 requestType:requestType
-                                                                                                                responseType:responseType
-                                                                                                             completionBlock:completion]];
+             NSURLSessionDataTask *dataTask = [dedicatedManager dataTaskWithRequest:request
+                                                                  completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                                          parameters:parameterInfo
+                                                                                                                             headers:headerInfo
+                                                                                                                          httpMethod:request.HTTPMethod
+                                                                                                                         requestType:requestType
+                                                                                                                        responseType:responseType
+                                                                                                                     completionBlock:completion]];
              
              //
              // resume dataTask
@@ -894,14 +978,14 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         //
         // create dataTask
         //
-        NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                     completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                             parameters:parameterInfo
-                                                                                                                headers:headerInfo
-                                                                                                             httpMethod:request.HTTPMethod
-                                                                                                            requestType:requestType
-                                                                                                           responseType:responseType
-                                                                                                        completionBlock:completion]];
+        NSURLSessionDataTask *dataTask = [dedicatedManager dataTaskWithRequest:request
+                                                             completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                                     parameters:parameterInfo
+                                                                                                                        headers:headerInfo
+                                                                                                                     httpMethod:request.HTTPMethod
+                                                                                                                    requestType:requestType
+                                                                                                                   responseType:responseType
+                                                                                                                completionBlock:completion]];
         //
         // resume dataTask
         //
@@ -986,6 +1070,16 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         return;
     }
     
+    MASIHTTPSessionManager *dedicatedManager = nil;
+    
+    if ([[MASConfiguration currentConfiguration].gatewayUrl isProtectedEndpoint:endPoint])
+    {
+        dedicatedManager = _manager;
+    }
+    else {
+        dedicatedManager = _publicManager;
+    }
+    
     //
     // Determine if we need to add the geo-location header value
     //
@@ -1020,14 +1114,14 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              //
              // create dataTask
              //
-             NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                          completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                  parameters:parameterInfo
-                                                                                                                     headers:headerInfo
-                                                                                                                  httpMethod:request.HTTPMethod
-                                                                                                                 requestType:requestType
-                                                                                                                responseType:responseType
-                                                                                                             completionBlock:completion]];
+             NSURLSessionDataTask *dataTask = [dedicatedManager dataTaskWithRequest:request
+                                                                  completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                                          parameters:parameterInfo
+                                                                                                                             headers:headerInfo
+                                                                                                                          httpMethod:request.HTTPMethod
+                                                                                                                         requestType:requestType
+                                                                                                                        responseType:responseType
+                                                                                                                     completionBlock:completion]];
              
              //
              // resume dataTask
@@ -1045,14 +1139,14 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         //
         // create dataTask
         //
-        NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                     completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                             parameters:parameterInfo
-                                                                                                                headers:headerInfo
-                                                                                                             httpMethod:request.HTTPMethod
-                                                                                                            requestType:requestType
-                                                                                                           responseType:responseType
-                                                                                                        completionBlock:completion]];
+        NSURLSessionDataTask *dataTask = [dedicatedManager dataTaskWithRequest:request
+                                                             completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                                     parameters:parameterInfo
+                                                                                                                        headers:headerInfo
+                                                                                                                     httpMethod:request.HTTPMethod
+                                                                                                                    requestType:requestType
+                                                                                                                   responseType:responseType
+                                                                                                                completionBlock:completion]];
         
         //
         // resume dataTask
@@ -1136,6 +1230,16 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         return;
     }
     
+    MASIHTTPSessionManager *dedicatedManager = nil;
+    
+    if ([[MASConfiguration currentConfiguration].gatewayUrl isProtectedEndpoint:endPoint])
+    {
+        dedicatedManager = _manager;
+    }
+    else {
+        dedicatedManager = _publicManager;
+    }
+    
     //
     // Determine if we need to add the geo-location header value
     //
@@ -1170,14 +1274,14 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
              //
              // create dataTask
              //
-             NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                          completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                  parameters:parameterInfo
-                                                                                                                     headers:headerInfo
-                                                                                                                  httpMethod:request.HTTPMethod
-                                                                                                                 requestType:requestType
-                                                                                                                responseType:responseType
-                                                                                                             completionBlock:completion]];
+             NSURLSessionDataTask *dataTask = [dedicatedManager dataTaskWithRequest:request
+                                                                  completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                                          parameters:parameterInfo
+                                                                                                                             headers:headerInfo
+                                                                                                                          httpMethod:request.HTTPMethod
+                                                                                                                         requestType:requestType
+                                                                                                                        responseType:responseType
+                                                                                                                     completionBlock:completion]];
              
              //
              // resume dataTask
@@ -1195,14 +1299,14 @@ static MASGatewayMonitorStatusBlock _gatewayStatusMonitor_;
         //
         // create dataTask
         //
-        NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                     completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                             parameters:parameterInfo
-                                                                                                                headers:headerInfo
-                                                                                                             httpMethod:request.HTTPMethod
-                                                                                                            requestType:requestType
-                                                                                                           responseType:responseType
-                                                                                                        completionBlock:completion]];
+        NSURLSessionDataTask *dataTask = [dedicatedManager dataTaskWithRequest:request
+                                                             completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                                     parameters:parameterInfo
+                                                                                                                        headers:headerInfo
+                                                                                                                     httpMethod:request.HTTPMethod
+                                                                                                                    requestType:requestType
+                                                                                                                   responseType:responseType
+                                                                                                                completionBlock:completion]];
         
         //
         // resume dataTask
@@ -1288,6 +1392,16 @@ withParameters:(NSDictionary *)parameterInfo
         return;
     }
     
+    MASIHTTPSessionManager *dedicatedManager = nil;
+    
+    if ([[MASConfiguration currentConfiguration].gatewayUrl isProtectedEndpoint:endPoint])
+    {
+        dedicatedManager = _manager;
+    }
+    else {
+        dedicatedManager = _publicManager;
+    }
+    
     //
     // Determine if we need to add the geo-location header value
     //
@@ -1322,14 +1436,14 @@ withParameters:(NSDictionary *)parameterInfo
              //
              // create dataTask
              //
-             NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                          completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                  parameters:parameterInfo
-                                                                                                                     headers:headerInfo
-                                                                                                                  httpMethod:request.HTTPMethod
-                                                                                                                 requestType:requestType
-                                                                                                                responseType:responseType
-                                                                                                             completionBlock:completion]];
+             NSURLSessionDataTask *dataTask = [dedicatedManager dataTaskWithRequest:request
+                                                                  completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                                          parameters:parameterInfo
+                                                                                                                             headers:headerInfo
+                                                                                                                          httpMethod:request.HTTPMethod
+                                                                                                                         requestType:requestType
+                                                                                                                        responseType:responseType
+                                                                                                                     completionBlock:completion]];
              
              //
              // resume dataTask
@@ -1348,14 +1462,14 @@ withParameters:(NSDictionary *)parameterInfo
         //
         // create dataTask
         //
-        NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                     completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                             parameters:parameterInfo
-                                                                                                                headers:headerInfo
-                                                                                                             httpMethod:request.HTTPMethod
-                                                                                                            requestType:requestType
-                                                                                                           responseType:responseType
-                                                                                                        completionBlock:completion]];
+        NSURLSessionDataTask *dataTask = [dedicatedManager dataTaskWithRequest:request
+                                                             completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                                     parameters:parameterInfo
+                                                                                                                        headers:headerInfo
+                                                                                                                     httpMethod:request.HTTPMethod
+                                                                                                                    requestType:requestType
+                                                                                                                   responseType:responseType
+                                                                                                                completionBlock:completion]];
         
         //
         // resume dataTask
@@ -1439,6 +1553,16 @@ withParameters:(NSDictionary *)parameterInfo
         return;
     }
     
+    MASIHTTPSessionManager *dedicatedManager = nil;
+    
+    if ([[MASConfiguration currentConfiguration].gatewayUrl isProtectedEndpoint:endPoint])
+    {
+        dedicatedManager = _manager;
+    }
+    else {
+        dedicatedManager = _publicManager;
+    }
+    
     //
     // Determine if we need to add the geo-location header value
     //
@@ -1473,14 +1597,14 @@ withParameters:(NSDictionary *)parameterInfo
              //
              // create dataTask
              //
-             NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                          completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                                  parameters:parameterInfo
-                                                                                                                     headers:headerInfo
-                                                                                                                  httpMethod:request.HTTPMethod
-                                                                                                                 requestType:requestType
-                                                                                                                responseType:responseType
-                                                                                                             completionBlock:completion]];
+             NSURLSessionDataTask *dataTask = [dedicatedManager dataTaskWithRequest:request
+                                                                  completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                                          parameters:parameterInfo
+                                                                                                                             headers:headerInfo
+                                                                                                                          httpMethod:request.HTTPMethod
+                                                                                                                         requestType:requestType
+                                                                                                                        responseType:responseType
+                                                                                                                     completionBlock:completion]];
              
              //
              // resume dataTask
@@ -1498,14 +1622,14 @@ withParameters:(NSDictionary *)parameterInfo
         //
         // create dataTask
         //
-        NSURLSessionDataTask *dataTask = [_manager dataTaskWithRequest:request
-                                                     completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
-                                                                                                             parameters:parameterInfo
-                                                                                                                headers:headerInfo
-                                                                                                             httpMethod:request.HTTPMethod
-                                                                                                            requestType:requestType
-                                                                                                           responseType:responseType
-                                                                                                        completionBlock:completion]];
+        NSURLSessionDataTask *dataTask = [dedicatedManager dataTaskWithRequest:request
+                                                             completionHandler:[self sessionDataTaskCompletionBlockWithEndPoint:endPoint
+                                                                                                                     parameters:parameterInfo
+                                                                                                                        headers:headerInfo
+                                                                                                                     httpMethod:request.HTTPMethod
+                                                                                                                    requestType:requestType
+                                                                                                                   responseType:responseType
+                                                                                                                completionBlock:completion]];
         
         //
         // resume dataTask

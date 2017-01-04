@@ -102,6 +102,10 @@ typedef void (^MASOTPChannelSelectionBlock)(NSArray *supportedOTPChannels, MASOT
  */
 typedef void (^MASOTPCredentialsBlock)(MASOTPFetchCredentialsBlock otpBlock, NSError *otpError);
 
+typedef NSURLSessionAuthChallengeDisposition (^MASSessionAuthenticationChallengeBlock)(NSURLSession *session, NSURLAuthenticationChallenge *challenge, NSURLCredential **credential);
+
+typedef NSURLSessionAuthChallengeDisposition (^MASTaskAuthenticationChallengeBlock)(NSURLSession *session, NSURLSessionTask *task, NSURLAuthenticationChallenge *challenge, NSURLCredential **credential);
+
 
 ///--------------------------------------
 /// @name MAS Constants
@@ -211,6 +215,25 @@ typedef NS_ENUM(NSInteger, MASState) {
      *  State that SDK is being forced to stop.
      */
     MASStateIsBeingStopped
+};
+
+
+/**
+ *  The enumerated MASSSLPinningMode that indicates which method to be used for SSL pinning on network requests other than currently active gateway.
+ */
+typedef NS_ENUM(NSInteger, MASSSLPinningMode) {
+    /**
+     *  SSL pinning mode as none
+     */
+    MASSSLPinningModeNone = -1,
+    /**
+     *  SSL pinning mode as pinning with public key
+     */
+    MASSSLPinningModePublicKey,
+    /**
+     *  SSL pinning mode as pinning with public certificate
+     */
+    MASSSLPinningModeCertificate
 };
 
 
