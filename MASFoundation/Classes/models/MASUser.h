@@ -210,12 +210,26 @@
  Authenticate a user via asynchronous request with authorization code.
  
  This will create an [MASUser currentUser] upon a successful result.
-
+ 
  @param authorizationCode The authorization code for the user.
  @param completion        The MASCompletionErrorBlock block that receives the results.  On a successful completion, the user
- *  available via [MASUser currentUser] has been updated with the new information.
+ available via [MASUser currentUser] has been updated with the new information.
  */
 + (void)loginWithAuthorizationCode:(NSString *)authorizationCode completion:(MASCompletionErrorBlock)completion;
+
+
+
+
+/**
+ Authenticate a user via asynchronous request with id_token
+ 
+ This will create an [MASUser currentUser] upon a successful result.
+ 
+ @param idToken    The id_token for the user.
+ @param completion The MASCompletionErrorBlock block that receives the results.  On a successful completion, the user
+ available via [MASUser currentUser] has been updated with the new information.
+ */
++ (void)loginWithIdToken:(NSString *)idToken completion:(MASCompletionErrorBlock)completion;
 
 
 

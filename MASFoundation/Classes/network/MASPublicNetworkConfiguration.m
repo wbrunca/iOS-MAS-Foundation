@@ -37,16 +37,30 @@
     return nil;
 }
 
+
 + (instancetype)sharedConfiguration
 {
     static id sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^
                   {
-                      sharedInstance = [[MASPublicNetworkConfiguration alloc] init];
+                      sharedInstance = [[MASPublicNetworkConfiguration alloc] initProtected];
                   });
     
     return sharedInstance;
+}
+
+
+- (instancetype)initProtected
+{
+    self = [super init];
+    
+    if (!self)
+    {
+        return nil;
+    }
+    
+    return self;
 }
 
 
